@@ -1,5 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -15,15 +15,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/api/health", () =>
-{
-    return Results.Ok(new
-    {
-        Status = "Healthy",
-        Application = "InvoiceFlow AI"
-    });
-})
-.WithName("GetHealth")
-.WithTags("Health");
-
+app.MapControllers();
 app.Run();
