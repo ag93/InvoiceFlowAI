@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Local development configuration
 **/appsettings.Development.json
+
+# Locally uploaded documents
+**/App_Data/

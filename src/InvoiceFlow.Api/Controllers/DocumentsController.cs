@@ -1,4 +1,5 @@
 ﻿using InvoiceFlow.Api.Contracts.Responses;
+using InvoiceFlow.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvoiceFlow.Api.Controllers;
@@ -8,6 +9,11 @@ namespace InvoiceFlow.Api.Controllers;
 public sealed class DocumentsController : ControllerBase
 {
     private const long MaxFileSize = 10 * 1024 * 1024;
+    private readonly IDocumentStorage _documentStorage;
+    public DocumentsController(IDocumentStorage documentStorage)
+    {
+        _documentStorage = documentStorage;
+    }
 
     [HttpPost]
     [Consumes("multipart/form-data")]
@@ -52,10 +58,12 @@ public sealed class DocumentsController : ControllerBase
             return BadRequest("The file does not have a valid PDF signature.");
         }
 
+        await using var content = file.OpenReadStream();
 
-        var response = new DocumentUploadResponse(file.FileName, file.Length, "application/pdf",
-            "PDF received and passed initial validation."
-        );
+        var documentId = await _documentStorage.SaveAsync(content, cancellationToken);
+
+        var response = new DocumentUploadResponse(documentId, file.FileName, file.Length, 
+            "application/pdf", "PDF uploaded and stored successfully.");
 
         return Ok(response);
     }

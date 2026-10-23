@@ -1,9 +1,13 @@
+using InvoiceFlow.Application.Interfaces;
+using InvoiceFlow.Infrastructure.Storage;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+var uploadDirectory = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "uploads");
+builder.Services.AddSingleton<IDocumentStorage>(_ => new LocalDocumentStorage(uploadDirectory));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
