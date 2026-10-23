@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/samples/" />
+  <Folder Name="/samples/invoices/" />
+  <Folder Name="/samples/invoices/simple/">
+    <File Path="samples/invoives/simple/expected.json" />
+    <File Path="samples/invoives/simple/invoice.pdf" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/InvoiceFlow.Api/InvoiceFlow.Api.csproj" />
     <Project Path="src/InvoiceFlow.Application/InvoiceFlow.Application.csproj" />
