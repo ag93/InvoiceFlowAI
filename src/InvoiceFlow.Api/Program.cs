@@ -1,8 +1,10 @@
 using InvoiceFlow.Application.Interfaces;
 using InvoiceFlow.Infrastructure.Storage;
+using InvoiceFlow.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
