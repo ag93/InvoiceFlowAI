@@ -10,9 +10,11 @@ public sealed class DocumentsController : ControllerBase
 {
     private const long MaxFileSize = 10 * 1024 * 1024;
     private readonly IDocumentStorage _documentStorage;
-    public DocumentsController(IDocumentStorage documentStorage)
+    private readonly IInvoiceExtractor _invoiceExtractor;
+    public DocumentsController(IDocumentStorage documentStorage, IInvoiceExtractor invoiceExtractor)
     {
         _documentStorage = documentStorage;
+        _invoiceExtractor = invoiceExtractor;
     }
 
     [HttpPost]
@@ -86,6 +88,28 @@ public sealed class DocumentsController : ControllerBase
         }
 
         return File(stream, "application/pdf");
+    }
+
+    [HttpPost("{id:guid}/analyze")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Analyze(Guid id, CancellationToken cancellationToken)
+    {
+        await using var stream =
+            await _documentStorage.OpenReadAsync(id, cancellationToken);
+
+        if (stream is null)
+        {
+            return NotFound(new { Message = "Document not found." });
+        }
+
+        var extraction = await _invoiceExtractor.ExtractAsync(stream, cancellationToken);
+
+        return Ok(new
+        {
+            DocumentId = id,
+            Extraction = extraction
+        });
     }
 }
 

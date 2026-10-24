@@ -1,5 +1,7 @@
 ﻿using Azure.AI.ContentUnderstanding;
 using Azure.Identity;
+using InvoiceFlow.Application.Interfaces;
+using InvoiceFlow.Infrastructure.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +24,7 @@ public static class DependencyInjection
         }
 
         services.AddSingleton(new ContentUnderstandingClient(endpointUri, new DefaultAzureCredential()));
+        services.AddScoped<IInvoiceExtractor, AzureInvoiceExtractor>();
         return services;
     }
 }
