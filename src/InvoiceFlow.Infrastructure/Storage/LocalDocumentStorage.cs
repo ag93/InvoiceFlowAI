@@ -39,4 +39,28 @@ public sealed class LocalDocumentStorage : IDocumentStorage
 
         return documentId;
     }
+
+    public Task<Stream?> OpenReadAsync(Guid documentId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var filePath = Path.Combine(_storageDirectory, $"{documentId:N}.pdf");
+
+        try
+        {
+            Stream stream = new FileStream(
+                filePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                bufferSize: 81920,
+                useAsync: true);
+
+            return Task.FromResult<Stream?>(stream);
+        }
+        catch (FileNotFoundException)
+        {
+            return Task.FromResult<Stream?>(null);
+        }
+    }
 }

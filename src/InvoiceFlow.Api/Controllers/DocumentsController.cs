@@ -62,9 +62,31 @@ public sealed class DocumentsController : ControllerBase
 
         var documentId = await _documentStorage.SaveAsync(content, cancellationToken);
 
-        var response = new DocumentUploadResponse(documentId, file.FileName, file.Length, 
+        var response = new DocumentUploadResponse(documentId, file.FileName, file.Length,
             "application/pdf", "PDF uploaded and stored successfully.");
 
         return Ok(response);
     }
+
+    [HttpGet("{id:guid}/file")]
+    [Produces("application/pdf")]
+    [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK, "application/pdf")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetDocument(Guid id, CancellationToken cancellationToken)
+    {
+        var stream = await _documentStorage.OpenReadAsync(id, cancellationToken);
+
+        if (stream is null)
+        {
+            return NotFound(new
+            {
+                Message = "Document not found.",
+                DocumentId = id
+            });
+        }
+
+        return File(stream, "application/pdf");
+    }
 }
+
+//https://localhost:44360/api/Documents/22643e06-3ff0-4e92-8d4d-1764bd083d67/file
