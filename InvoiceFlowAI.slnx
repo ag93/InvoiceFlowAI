@@ -11,4 +11,7 @@
     <Project Path="src/InvoiceFlow.Domain/InvoiceFlow.Domain.csproj" />
     <Project Path="src/InvoiceFlow.Infrastructure/InvoiceFlow.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/InvoiceFlow.UnitTests/InvoiceFlow.UnitTests.csproj" />
+  </Folder>
 </Solution>
