@@ -486,3 +486,8 @@ $RECYCLE.BIN/
 
 # Locally uploaded documents
 **/App_Data/
+
+# Local SQLite database files
+*.db
+*.db-shm
+*.db-wal

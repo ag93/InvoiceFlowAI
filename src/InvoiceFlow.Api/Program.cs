@@ -6,6 +6,8 @@ using Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+var databasePath = Path.Combine(builder.Environment.ContentRootPath, "invoiceflow.db");
+builder.Configuration["ConnectionStrings:InvoiceDatabase"] = $"Data Source={databasePath}";
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
