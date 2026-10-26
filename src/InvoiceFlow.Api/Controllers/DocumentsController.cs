@@ -1,5 +1,7 @@
 ﻿using InvoiceFlow.Api.Contracts.Responses;
+using InvoiceFlow.Application.DTOs;
 using InvoiceFlow.Application.Interfaces;
+using InvoiceFlow.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvoiceFlow.Api.Controllers;
@@ -10,11 +12,11 @@ public sealed class DocumentsController : ControllerBase
 {
     private const long MaxFileSize = 10 * 1024 * 1024;
     private readonly IDocumentStorage _documentStorage;
-    private readonly IInvoiceExtractor _invoiceExtractor;
-    public DocumentsController(IDocumentStorage documentStorage, IInvoiceExtractor invoiceExtractor)
+    private readonly InvoiceProcessingService _processingService;
+    public DocumentsController(IDocumentStorage documentStorage, InvoiceProcessingService processingService)
     {
         _documentStorage = documentStorage;
-        _invoiceExtractor = invoiceExtractor;
+        _processingService = processingService;
     }
 
     [HttpPost]
@@ -91,25 +93,21 @@ public sealed class DocumentsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/analyze")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(InvoiceProcessingResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Analyze(Guid id, CancellationToken cancellationToken)
     {
-        await using var stream =
-            await _documentStorage.OpenReadAsync(id, cancellationToken);
+        var result = await _processingService.ProcessAsync(id, cancellationToken);
 
-        if (stream is null)
+        if (result is null)
         {
-            return NotFound(new { Message = "Document not found." });
+            return NotFound(new
+            {
+                Message = "Document not found."
+            });
         }
 
-        var extraction = await _invoiceExtractor.ExtractAsync(stream, cancellationToken);
-
-        return Ok(new
-        {
-            DocumentId = id,
-            Extraction = extraction
-        });
+        return Ok(result);
     }
 }
 

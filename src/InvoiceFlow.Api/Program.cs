@@ -1,13 +1,17 @@
+using Azure;
 using Azure.AI.ContentUnderstanding;
 using InvoiceFlow.Application.Interfaces;
+using InvoiceFlow.Application.Services;
+using InvoiceFlow.Application.Validation;
 using InvoiceFlow.Infrastructure;
 using InvoiceFlow.Infrastructure.Storage;
-using Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 var databasePath = Path.Combine(builder.Environment.ContentRootPath, "invoiceflow.db");
 builder.Configuration["ConnectionStrings:InvoiceDatabase"] = $"Data Source={databasePath}";
+builder.Services.AddScoped<InvoiceValidationService>();
+builder.Services.AddScoped<InvoiceProcessingService>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
