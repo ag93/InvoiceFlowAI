@@ -1,4 +1,5 @@
-﻿using InvoiceFlow.Api.Contracts.Responses;
+﻿using InvoiceFlow.Application.DTOs;
+using InvoiceFlow.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvoiceFlow.Api.Controllers;
@@ -7,30 +8,36 @@ namespace InvoiceFlow.Api.Controllers;
 [Route("api/[controller]")]
 public sealed class InvoicesController : ControllerBase
 {
-    [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<InvoiceResponse>), StatusCodes.Status200OK)]
-    public ActionResult<IEnumerable<InvoiceResponse>> GetInvoices()
-    {
-        var invoices = new List<InvoiceResponse>
-        {
-            new(
-                Guid.Parse("c85b03cc-3223-43f8-8588-7635a7f3a768"),
-                "Contoso",
-                "INV-12345",
-                new DateOnly(2026, 8, 12),
-                1842.50m,
-                "USD"
-            ),
-            new(
-                Guid.Parse("e14ff654-97ec-40fd-a358-58da8f6be68d"),
-                "Northwind Traders",
-                "INV-67890",
-                new DateOnly(2026, 9, 5),
-                725.00m,
-                "CAD"
-            )
-        };
+    private readonly IInvoiceRepository _invoiceRepository;
 
+    public InvoicesController(IInvoiceRepository invoiceRepository)
+    {
+        _invoiceRepository = invoiceRepository;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<InvoiceResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<InvoiceResponse>>> GetAll(CancellationToken cancellationToken)
+    {
+        var invoices = await _invoiceRepository.GetAllAsync(cancellationToken);
         return Ok(invoices);
+    }
+
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(InvoiceResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<InvoiceResponse>> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        var invoice = await _invoiceRepository.GetByIdAsync(id, cancellationToken);
+
+        if (invoice is null)
+        {
+            return NotFound(new
+            {
+                Message = "Invoice not found."
+            });
+        }
+
+        return Ok(invoice);
     }
 }

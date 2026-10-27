@@ -41,6 +41,7 @@ public static class DependencyInjection
         services.AddDbContext<InvoiceDbContext>(options =>options.UseSqlite(connectionString));
 
         services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
         return services;
     }
