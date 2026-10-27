@@ -3,6 +3,7 @@ using Azure.Identity;
 using InvoiceFlow.Application.Interfaces;
 using InvoiceFlow.Infrastructure.AI;
 using InvoiceFlow.Infrastructure.Persistence;
+using InvoiceFlow.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,9 @@ public static class DependencyInjection
         }
 
         services.AddDbContext<InvoiceDbContext>(options =>options.UseSqlite(connectionString));
+
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
+
         return services;
     }
 }

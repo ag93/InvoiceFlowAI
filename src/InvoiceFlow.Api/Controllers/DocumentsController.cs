@@ -2,6 +2,8 @@
 using InvoiceFlow.Application.DTOs;
 using InvoiceFlow.Application.Interfaces;
 using InvoiceFlow.Application.Services;
+using InvoiceFlow.Domain.Entities;
+using InvoiceFlow.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvoiceFlow.Api.Controllers;
@@ -12,11 +14,13 @@ public sealed class DocumentsController : ControllerBase
 {
     private const long MaxFileSize = 10 * 1024 * 1024;
     private readonly IDocumentStorage _documentStorage;
+    private readonly IDocumentRepository _documentRepository;
     private readonly InvoiceProcessingService _processingService;
-    public DocumentsController(IDocumentStorage documentStorage, InvoiceProcessingService processingService)
+    public DocumentsController(IDocumentStorage documentStorage, InvoiceProcessingService processingService, IDocumentRepository documentRepository)
     {
         _documentStorage = documentStorage;
         _processingService = processingService;
+        _documentRepository = documentRepository;
     }
 
     [HttpPost]
@@ -66,6 +70,15 @@ public sealed class DocumentsController : ControllerBase
 
         var documentId = await _documentStorage.SaveAsync(content, cancellationToken);
 
+        var document = new Document
+        {
+            Id = documentId,
+            OriginalFileName = Path.GetFileName(file.FileName),
+            Status = DocumentStatus.Uploaded,
+            UploadedAt = DateTimeOffset.UtcNow
+        };
+
+        await _documentRepository.CreateAsync(document, cancellationToken);
         var response = new DocumentUploadResponse(documentId, file.FileName, file.Length,
             "application/pdf", "PDF uploaded and stored successfully.");
 
@@ -111,4 +124,4 @@ public sealed class DocumentsController : ControllerBase
     }
 }
 
-//https://localhost:44360/api/Documents/22643e06-3ff0-4e92-8d4d-1764bd083d67/file
+//https://localhost:44360/api/Documents/140884f4-68a9-4122-b10a-7896042fe2ad/file
