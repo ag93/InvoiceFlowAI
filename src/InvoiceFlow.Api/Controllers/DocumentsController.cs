@@ -1,5 +1,6 @@
 ﻿using InvoiceFlow.Api.Contracts.Responses;
 using InvoiceFlow.Application.DTOs;
+using InvoiceFlow.Application.Exceptions;
 using InvoiceFlow.Application.Interfaces;
 using InvoiceFlow.Application.Services;
 using InvoiceFlow.Domain.Entities;
@@ -113,19 +114,30 @@ public sealed class DocumentsController : ControllerBase
     [HttpPost("{id:guid}/analyze")]
     [ProducesResponseType(typeof(InvoiceProcessingResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Analyze(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _processingService.ProcessAsync(id, cancellationToken);
-
-        if (result is null)
+        try
         {
-            return NotFound(new
+            var result = await _processingService.ProcessAsync(id, cancellationToken);
+
+            if (result is null)
             {
-                Message = "Document not found."
+                return NotFound(new
+                {
+                    Message = "Document not found."
+                });
+            }
+
+            return Ok(result);
+        }
+        catch (DocumentProcessingConflictException ex)
+        {
+            return Conflict(new
+            {
+                Message = ex.Message
             });
         }
-
-        return Ok(result);
     }
 
     [HttpPost("{id:guid}/approve")]

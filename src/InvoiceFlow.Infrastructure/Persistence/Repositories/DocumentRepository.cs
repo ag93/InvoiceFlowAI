@@ -21,18 +21,33 @@ public sealed class DocumentRepository : IDocumentRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> TryStartProcessingAsync(Guid documentId, CancellationToken cancellationToken)
+    public async Task<StartProcessingResult> TryStartProcessingAsync(Guid documentId, CancellationToken cancellationToken)
     {
-        var document = await _dbContext.Documents.FindAsync(new object[] { documentId }, cancellationToken);
+        var updated = await _dbContext.Documents
+            .Where(x =>
+                x.Id == documentId &&
+                x.Status != DocumentStatus.Approved &&
+                x.Status != DocumentStatus.Processing)
+            .ExecuteUpdateAsync(
+                updates => updates.SetProperty(
+                    x => x.Status,
+                    DocumentStatus.Processing),
+                cancellationToken);
 
-        if (document is null)
+        if (updated == 1)
         {
-            return false;
+            return StartProcessingResult.Started;
         }
 
-        document.Status = DocumentStatus.Processing;
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return true;
+        var exists = await _dbContext.Documents
+            .AsNoTracking()
+            .AnyAsync(
+                x => x.Id == documentId,
+                cancellationToken);
+
+        return exists
+            ? StartProcessingResult.Conflict
+            : StartProcessingResult.NotFound;
     }
 
     public async Task SaveExtractionAsync(Guid documentId, InvoiceExtractionResult extraction, CancellationToken cancellationToken)

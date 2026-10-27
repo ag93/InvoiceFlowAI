@@ -1,4 +1,5 @@
 ﻿using InvoiceFlow.Application.DTOs;
+using InvoiceFlow.Application.Exceptions;
 using InvoiceFlow.Application.Interfaces;
 using InvoiceFlow.Application.Validation;
 using Microsoft.Extensions.Logging;
@@ -38,11 +39,22 @@ public sealed class InvoiceProcessingService
         }
 
         // 2. Confirm the document exists in SQLite.
-        var started = await _documentRepository.TryStartProcessingAsync(documentId, cancellationToken);
+        var startResult = await _documentRepository.TryStartProcessingAsync(documentId, cancellationToken);
 
-        if (!started)
+        switch (startResult)
         {
-            return null;
+            case StartProcessingResult.NotFound:
+                return null;
+
+            case StartProcessingResult.Conflict:
+                throw new DocumentProcessingConflictException();
+
+            case StartProcessingResult.Started:
+                break;
+
+            default:
+                throw new InvalidOperationException(
+                    "Unexpected document processing state.");
         }
 
         try
