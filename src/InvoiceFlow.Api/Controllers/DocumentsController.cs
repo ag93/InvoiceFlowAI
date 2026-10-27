@@ -129,10 +129,10 @@ public sealed class DocumentsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/approve")]
-    //[ProducesResponseType(typeof(Application.DTOs.InvoiceResponse), StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(StatusCodes.Status404NotFound)]
-    //[ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(InvoiceResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Approve(
         Guid id,
         [FromBody] ApproveInvoiceRequest request,
