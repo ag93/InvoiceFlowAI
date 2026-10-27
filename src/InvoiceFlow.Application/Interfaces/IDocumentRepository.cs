@@ -9,4 +9,5 @@ public interface IDocumentRepository
     Task<bool> TryStartProcessingAsync(Guid documentId, CancellationToken cancellationToken);
     Task SaveExtractionAsync(Guid documentId, InvoiceExtractionResult extraction, CancellationToken cancellationToken);
     Task MarkFailedAsync(Guid documentId, CancellationToken cancellationToken);
+    Task<InvoiceApprovalResult> ApproveAsync(Guid documentId, InvoiceExtractionResult correctedValues, CancellationToken cancellationToken);
 }

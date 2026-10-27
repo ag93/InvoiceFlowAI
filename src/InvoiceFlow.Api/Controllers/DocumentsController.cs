@@ -16,11 +16,16 @@ public sealed class DocumentsController : ControllerBase
     private readonly IDocumentStorage _documentStorage;
     private readonly IDocumentRepository _documentRepository;
     private readonly InvoiceProcessingService _processingService;
-    public DocumentsController(IDocumentStorage documentStorage, InvoiceProcessingService processingService, IDocumentRepository documentRepository)
+    private readonly InvoiceApprovalService _approvalService;
+    public DocumentsController(IDocumentStorage documentStorage,
+                               InvoiceProcessingService processingService,
+                               IDocumentRepository documentRepository,
+                               InvoiceApprovalService approvalService)
     {
         _documentStorage = documentStorage;
         _processingService = processingService;
         _documentRepository = documentRepository;
+        _approvalService = approvalService;
     }
 
     [HttpPost]
@@ -121,6 +126,45 @@ public sealed class DocumentsController : ControllerBase
         }
 
         return Ok(result);
+    }
+
+    [HttpPost("{id:guid}/approve")]
+    //[ProducesResponseType(typeof(Application.DTOs.InvoiceResponse), StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+    //[ProducesResponseType(StatusCodes.Status404NotFound)]
+    //[ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Approve(
+        Guid id,
+        [FromBody] ApproveInvoiceRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _approvalService.ApproveAsync(
+            id,
+            request,
+            cancellationToken);
+
+        return result.Status switch
+        {
+            InvoiceApprovalStatus.Approved =>
+                Ok(result.Invoice),
+
+            InvoiceApprovalStatus.Invalid =>
+                BadRequest(result.Validation),
+
+            InvoiceApprovalStatus.NotFound =>
+                NotFound(new
+                {
+                    Message = "Document not found."
+                }),
+
+            InvoiceApprovalStatus.Conflict =>
+                Conflict(new
+                {
+                    Message = "Document is not eligible for approval or is already approved."
+                }),
+
+            _ => StatusCode(500)
+        };
     }
 }
 

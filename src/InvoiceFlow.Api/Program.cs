@@ -12,6 +12,7 @@ var databasePath = Path.Combine(builder.Environment.ContentRootPath, "invoiceflo
 builder.Configuration["ConnectionStrings:InvoiceDatabase"] = $"Data Source={databasePath}";
 builder.Services.AddScoped<InvoiceValidationService>();
 builder.Services.AddScoped<InvoiceProcessingService>();
+builder.Services.AddScoped<InvoiceApprovalService>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
