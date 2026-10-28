@@ -4,6 +4,7 @@ import {
   type SubmitEvent
 } from 'react'
 import { uploadDocument } from '../api/documents'
+import { DocumentAnalysis } from './DocumentAnalysis'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -117,11 +118,18 @@ export function DocumentUpload() {
         )}
 
         {documentId && (
+        <div className="uploaded-document">
           <div className="upload-success" role="status">
             <strong>Document uploaded successfully!</strong>
             <p>Document ID:</p>
             <code>{documentId}</code>
           </div>
+
+          <DocumentAnalysis
+            key={documentId}
+            documentId={documentId}
+          />
+        </div>
         )}
       </form>
     </section>
