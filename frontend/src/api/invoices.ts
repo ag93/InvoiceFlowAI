@@ -1,7 +1,8 @@
 import type { Invoice } from '../types/invoice'
+import { authFetch } from './authFetch'
 
 export async function getInvoices(signal?: AbortSignal): Promise<Invoice[]> {
-  const response = await fetch('/api/invoices', { signal })
+  const response = await authFetch('/api/invoices', { signal })
 
   if (!response.ok) {
     throw new Error(`Could not load invoices (HTTP ${response.status})`)

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useIsAuthenticated, useMsal } from '@azure/msal-react'
 import { InteractionStatus } from '@azure/msal-browser'
+import { invoiceApiScopes } from './msalConfig'
 import App from '../App'
 
 export function AuthGate() {
@@ -14,7 +15,7 @@ export function AuthGate() {
     setError(null)
 
     try {
-      await instance.loginRedirect()
+      await instance.loginRedirect({scopes: invoiceApiScopes,})
     } catch (err) {
       setError(
         err instanceof Error

@@ -12,6 +12,8 @@ import type {
   ApprovalValidationResponse
 } from '../types/approval'
 
+import { authFetch } from './authFetch'
+
 export async function uploadDocument(
   file: File
 ): Promise<UploadDocumentResponse> {
@@ -19,7 +21,7 @@ export async function uploadDocument(
 
   formData.append('file', file)
 
-  const response = await fetch('/api/documents', {
+  const response = await authFetch('/api/documents', {
     method: 'POST',
     body: formData,
   })
@@ -47,7 +49,7 @@ export async function uploadDocument(
 export async function analyzeDocument(
   documentId: string
 ): Promise<InvoiceProcessingResult> {
-  const response = await fetch(
+  const response = await authFetch(
     `/api/documents/${encodeURIComponent(documentId)}/analyze`,
     { method: 'POST' }
   )
@@ -94,7 +96,7 @@ export async function approveDocument(
   documentId: string,
   request: ApproveInvoiceRequest
 ): Promise<ApprovedInvoice> {
-  const response = await fetch(
+  const response = await authFetch(
     `/api/documents/${encodeURIComponent(documentId)}/approve`,
     {
       method: 'POST',

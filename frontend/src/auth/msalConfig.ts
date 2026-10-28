@@ -1,4 +1,5 @@
 import type { Configuration } from '@azure/msal-browser'
+import { PublicClientApplication } from '@azure/msal-browser'
 
 const clientId = import.meta.env.VITE_ENTRA_CLIENT_ID
 const tenantId = import.meta.env.VITE_ENTRA_TENANT_ID
@@ -20,3 +21,14 @@ export const msalConfig: Configuration = {
     cacheLocation: 'sessionStorage',
   },
 }
+
+const apiScope = import.meta.env.VITE_ENTRA_API_SCOPE
+
+if (!apiScope) {
+  throw new Error('Microsoft Entra API scope is missing.')
+}
+
+export const invoiceApiScopes = [apiScope]
+
+export const msalInstance =
+  new PublicClientApplication(msalConfig)
