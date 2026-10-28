@@ -1,6 +1,6 @@
 # InvoiceFlow AI
 
-![CI](https://github.com/ag93/InvoiceFlowAI/actions/workflows/ci.yml/badge.svg?branch=main)
+[![CI](https://github.com/ag93/InvoiceFlowAI/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ag93/InvoiceFlowAI/actions/workflows/ci.yml)
 
 **AI-assisted invoice processing with a human approval step.** Built with **.NET 10**, **React + TypeScript**, **Azure AI Content Understanding**, **Microsoft Entra ID**, and **SQLite**.
 
