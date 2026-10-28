@@ -491,3 +491,9 @@ $RECYCLE.BIN/
 *.db
 *.db-shm
 *.db-wal
+
+# React / Vite
+**/node_modules/
+**/dist/
+**/.env.local
+**/.env.*.local
