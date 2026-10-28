@@ -248,6 +248,9 @@ The repository includes six focused validation test cases. The project has also 
 - **AI accuracy varies:** Extraction quality depends on document layout and content. A successful result for a sample invoice is not an accuracy benchmark; human review is required.
 - **Limited automated tests:** Validation rules have focused unit tests; this project does not yet include a full integration or end-to-end automated test suite.
 
+## Continuous integration (CI)
+Continuous integration is implemented using GitHub Actions. Every push and pull request to the main branch automatically builds the .NET 10 solution, runs xUnit tests, lints the React frontend, and validates its production build.
+
 ## Future improvements
 
 A persistent review queue, inline PDF preview, stronger concurrency and recovery handling, per-user invoice ownership, expanded automated testing, and deployment-ready storage would be natural next steps.
