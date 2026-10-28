@@ -1,5 +1,7 @@
 # InvoiceFlow AI
 
+https://github.com/ag93/InvoiceFlowAI/actions/workflows/ci.yml/badge.svg?branch=main
+
 **AI-assisted invoice processing with a human approval step.** Built with **.NET 10**, **React + TypeScript**, **Azure AI Content Understanding**, **Microsoft Entra ID**, and **SQLite**.
 
 InvoiceFlow AI turns a PDF invoice into structured, reviewable data. Users sign in, upload a PDF, ask Azure AI to extract invoice fields, correct any mistakes, and approve the verified invoice. Approved invoices are persisted and displayed in a dashboard.
