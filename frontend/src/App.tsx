@@ -6,6 +6,7 @@ import './App.css'
 
 function App() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [refreshKey, setRefreshKey] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -14,6 +15,8 @@ function App() {
 
     async function loadInvoices() {
       try {
+        setLoading(true)
+        setError(null)
         const data = await getInvoices(controller.signal)
 
         if (!controller.signal.aborted) {
@@ -37,7 +40,7 @@ function App() {
     void loadInvoices()
 
     return () => controller.abort()
-  }, [])
+  }, [refreshKey])
 
   const vendorCount = new Set(invoices.map(invoice => invoice.vendor)).size
 
@@ -61,7 +64,10 @@ function App() {
             <p>Manage your approved invoices in one place.</p>
           </div>
         </section>
-        <DocumentUpload />
+        <DocumentUpload
+        onApproved={() => {
+          setRefreshKey(current => current + 1)
+        }}/>
           <section className="stats-grid" aria-label="Dashboard statistics">
             <div className="stat-card">
               <span>Approved invoices</span>

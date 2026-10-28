@@ -5,10 +5,17 @@ import {
 } from 'react'
 import { uploadDocument } from '../api/documents'
 import { DocumentAnalysis } from './DocumentAnalysis'
+import type { Invoice } from '../types/invoice'
+
+interface DocumentUploadProps {
+  onApproved: (invoice: Invoice) => void
+}
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
-export function DocumentUpload() {
+export function DocumentUpload({
+  onApproved
+}: DocumentUploadProps) {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -110,13 +117,13 @@ export function DocumentUpload() {
         >
           {uploading ? 'Uploading...' : 'Upload PDF'}
         </button>
-
+        </form>
         {error && (
           <p className="upload-error" role="alert">
             {error}
           </p>
         )}
-
+        
         {documentId && (
         <div className="uploaded-document">
           <div className="upload-success" role="status">
@@ -128,10 +135,10 @@ export function DocumentUpload() {
           <DocumentAnalysis
             key={documentId}
             documentId={documentId}
+            onApproved={onApproved}
           />
         </div>
         )}
-      </form>
     </section>
   )
 }

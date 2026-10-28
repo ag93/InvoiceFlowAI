@@ -3,13 +3,17 @@ import { analyzeDocument } from '../api/documents'
 import type {
   InvoiceProcessingResult
 } from '../types/analysis'
+import { InvoiceReviewForm } from './InvoiceReviewForm'
+import type { Invoice } from '../types/invoice'
 
 interface DocumentAnalysisProps {
   documentId: string
+  onApproved: (invoice: Invoice) => void
 }
 
 export function DocumentAnalysis({
-  documentId
+  documentId,
+  onApproved
 }: DocumentAnalysisProps) {
   const [result, setResult] =
     useState<InvoiceProcessingResult | null>(null)
@@ -139,6 +143,11 @@ export function DocumentAnalysis({
               </>
             )}
           </div>
+          <InvoiceReviewForm
+            documentId={documentId}
+            extraction={result.extraction}
+            onApproved={onApproved}
+            />
         </div>
       )}
     </section>
