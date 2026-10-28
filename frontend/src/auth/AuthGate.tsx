@@ -99,6 +99,15 @@ export function AuthGate() {
         >
           Sign out
         </button>
+
+        <button
+          type="button"
+          className="signout-button"
+          onClick={() => void handleReconnect()}
+          disabled={isBusy}
+        >
+          Reconnect Microsoft
+        </button>
       </div>
 
       {error && (
@@ -110,4 +119,31 @@ export function AuthGate() {
       <App />
     </>
   )
+
+  async function handleReconnect() {
+  setError(null)
+
+  try {
+    const account =
+      instance.getActiveAccount() ?? accounts[0]
+
+    if (!account) {
+      await instance.loginRedirect({
+        scopes: invoiceApiScopes,
+      })
+      return
+    }
+
+    await instance.acquireTokenRedirect({
+      account,
+      scopes: invoiceApiScopes,
+    })
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : 'Could not reconnect your Microsoft session.'
+    )
+  }
+}
 }
