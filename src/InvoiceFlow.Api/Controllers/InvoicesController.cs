@@ -1,11 +1,15 @@
 ﻿using InvoiceFlow.Application.DTOs;
 using InvoiceFlow.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 
 namespace InvoiceFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
+[RequiredScope("Invoices.Access")]
 public sealed class InvoicesController : ControllerBase
 {
     private readonly IInvoiceRepository _invoiceRepository;

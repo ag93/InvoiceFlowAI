@@ -5,12 +5,16 @@ using InvoiceFlow.Application.Interfaces;
 using InvoiceFlow.Application.Services;
 using InvoiceFlow.Domain.Entities;
 using InvoiceFlow.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 
 namespace InvoiceFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
+[RequiredScope("Invoices.Access")]
 public sealed class DocumentsController : ControllerBase
 {
     private const long MaxFileSize = 10 * 1024 * 1024;
