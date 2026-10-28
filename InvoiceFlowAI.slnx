@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/pipeline/">
+    <File Path=".github/workflows/ci.yml" />
+  </Folder>
   <Folder Name="/samples/" />
   <Folder Name="/samples/invoices/" />
   <Folder Name="/samples/invoices/simple/">
